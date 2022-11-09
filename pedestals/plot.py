@@ -1,4 +1,5 @@
-import pandas as pd
+#import pandas as pd
+import os
 import ROOT
 import sys
 import uproot
@@ -7,12 +8,14 @@ from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy import asarray as ar,exp
+import argparse
+import subprocess
+#from LDMX.Framework import ldmxcfg
 
-def gaus(x,a,b,c):
-    return a*np.exp((-(x-b)**2)/(2*c**2))
+#def gaus(x,a,b,c):
+#    return a*np.exp((-(x-b)**2)/(2*c**2))
 
-def main():
-    root_file_path = sys.argv[1]
+def plot(root_file_path):
     histogram_type = "alladc"
     infile = uproot.open(root_file_path)
     listOfKeys = infile.keys()
@@ -44,6 +47,22 @@ def main():
             ax1.clear()
 
     infile.close()
+
+
+def get_arguments():
+    parser = argparse.ArgumentParser(
+                    prog = "mine.py",
+                    description =   '''Heyo!''',
+                    epilog = 'Enjoy!')
+    parser.add_argument('--input', type=str, required=True, help='Path to input data set for compression')
+    args = parser.parse_args()
+    return args.input
+
+
+def main():
+    raw_path = get_arguments()
+    unpacked_path = raw_path.replace('.raw','_-_unpacked.root')
+    plot(unpacked_path)
         
 
 if __name__ == "__main__":

@@ -2,14 +2,25 @@ import sys
 import ROOT
 from ROOT import TCanvas, TPad, TFile, TPaveLabel, TPaveText, TStyle, TTree, TH1D, TH2D, TLegend, TGraph, TGraphErrors
 from ROOT import gROOT, gStyle, gSystem, gPad
+import argparse
 
 #Usage: ldmx python3 SampleHcalAna.py unpacked file.root
 #Outputs file hist_adc_unpacked file.root
 
 gSystem.Load("libFramework.so")
 
-inputFile=TFile(sys.argv[1], "read") #input file from arguments
-outputFileName = sys.argv[1].split(".")[0]+"_output.root" #ouptut file name
+from LDMX.Framework import ldmxcfg
+p = ldmxcfg.Process('unpack')
+
+parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
+parser.add_argument('--input', type=str, required=True)
+arg = parser.parse_args()
+
+inputFile_path = arg.input.replace('.raw','_-_decoded.root')
+outputFileName = arg.input.replace('.raw','_-_unpacked.root')
+
+inputFile=TFile(inputFile_path, "read") #input file from arguments
+
 tree=inputFile.Get("LDMX_Events") #get tree
 
 c = TCanvas("c","c",800,600)

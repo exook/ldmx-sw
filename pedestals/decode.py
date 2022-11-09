@@ -2,21 +2,19 @@
 
 import argparse, sys
 
+# Run argparse
 parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
-
-parser.add_argument('input_file')
+parser.add_argument('--input', type=str, required=True)
+parser.add_argument('--max_events',type=int, required=True)
 parser.add_argument('--pause',action='store_true')
 grp = parser.add_mutually_exclusive_group()
 grp.add_argument('--keep_eids',action='store_true',
         help='Dont translate electronic into detector IDs.')
 grp.add_argument('--recon',help='Attempt to reconstruct.',action='store_true')
-parser.add_argument('--max_events',default=-1,type=int)
 parser.add_argument('--pedestals',default=None,type=str)
-
 arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
-
 p = ldmxcfg.Process('unpack')
 p.maxEvents = arg.max_events
 p.termLogLevel = 0
@@ -28,17 +26,12 @@ import LDMX.Hcal.HcalGeometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.DQM import dqm
 from LDMX.Packing import rawio
-
 import os
-base_name = os.path.basename(arg.input_file).replace('.raw','')
-dir_name  = os.path.dirname(arg.input_file)
-if not dir_name :
-    dir_name = '.'
-
-p.outputFiles = [f'{dir_name}/unpacked_{base_name}.root']
-
-# where the ntuplizing tree will go
-p.histogramFile = f'adc_{base_name}.root'
+raw_file_path = arg.input
+decoded_file_path = arg.input.replace('.raw','_-_decoded.root')
+ntuple_file_path = arg.input.replace('.raw','_-_ntuple.root')
+p.outputFiles = [decoded_file_path]
+p.histogramFile = ntuple_file_path
 
 if arg.keep_eids :
     tbl = None
@@ -50,7 +43,7 @@ else :
 #   2. ntuplize digi collection
 p.sequence = [ 
         hcal_format.HcalRawDecoder(
-            input_file = arg.input_file,
+            input_file = arg.input,
             connections_table = tbl,
             output_name = 'ChipSettingsTestDigis'
             ),
