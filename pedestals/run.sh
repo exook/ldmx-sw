@@ -24,13 +24,10 @@ echo "mode = $mode"
 
 
 if [ "$mode" == "decode" ]; then
-    echo "ddecode"
     ldmx fire decode.py --max_events=$max_events --input=$input
 elif [ "$mode" == "unpack" ]; then
-    echo "uunpack"
     ldmx fire unpack.py --input=$input
 elif [ "$mode" == "plot" ]; then
-    echo "pplto"
     python3 plot.py --input=$input
 elif [ "$mode" == "all" ]; then
     ldmx fire decode.py --max_events=$max_events --input=$input
