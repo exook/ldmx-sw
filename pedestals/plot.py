@@ -17,13 +17,17 @@ import subprocess
 
 def plot(root_file_path):
     histogram_type = "alladc"
+    #histogram_type = "maxadc"
+    #specific_eid = "411044098"
     infile = uproot.open(root_file_path)
     listOfKeys = infile.keys()
     with PdfPages(root_file_path.split(".root")[0]+".pdf") as pdf:
         figure1, ax1 = plt.subplots(figsize=(18.3*(1/2.54)*1.7, 13.875*(1/2.54)*1.32))
 
         for key in listOfKeys:
+            print(key)
             if key.split("_")[0] != histogram_type: continue
+            #if key.split("_")[2] != specific_eid+";1": continue
             print(key)
             data = infile[key].to_numpy()
             bins=data[1]
@@ -39,7 +43,7 @@ def plot(root_file_path):
 
             ax1.hist(bins[:-1], bins, weights=counts,histtype='step')
 
-            ax1.set_xlim(80,120)
+            #ax1.set_xlim(80,120)
             ax1.set_title(f"{key}, {sum(counts)}")
             ax1.set_xlabel("ADC", ha='right', x=1.0)
             ax1.set_ylabel("Counts", ha='right', y=1.0)
